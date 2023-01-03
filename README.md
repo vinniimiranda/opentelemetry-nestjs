@@ -1,16 +1,16 @@
-<h1 align="center">Nest.js Correlation ID</h1>
+<h1 align="center">ID de correlação Nest.js</h1>
 
 <div align="center">
-  <a href="https://nestjs.com" target="_blank">
-    <img src="https://img.shields.io/badge/built%20with-NestJs-red.svg" alt="Built with NestJS">
-  </a>
+   <a href="https://nestjs.com" target="_blank">
+     <img src="https://img.shields.io/badge/built%20with-NestJs-red.svg" alt="Construído com NestJS">
+   </a>
 </div>
 
-### Why?
+### Por que?
 
-When debugging an issue in your applications logs, it helps to be able to follow a specific request up and down your whole stack. This is usually done by including a `correlation-id` (aka `Request-id`) header in all your requests, and forwarding the same id across all your microservices.
+Ao debugar um problema nos logs de seus aplicativos, é útil poder acompanhar uma solicitação específica por toda a pilha. Isso geralmente é feito incluindo um cabeçalho `correlation-id` (também conhecido como `Request-id`) em todas as suas solicitações e encaminhando o mesmo id em todos os seus microsserviços.
 
-### Installation
+### Instalação
 
 ```bash
 yarn add bankly-correlation-id-nestjs
@@ -20,28 +20,28 @@ yarn add bankly-correlation-id-nestjs
 npm install bankly-correlation-id-nestjs
 ```
 
-### How to use
+### Como usar
 
-Add the middleware to your `AppModule`
+Adicione o middleware ao seu `AppModule`
 
 ```ts
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import {
-  CorrelationIdMiddleware,
-  CorrelationModule,
+   CorrelationIdMiddleware,
+   CorrelationModule,
 } from 'bankly-correlation-id-nestjs';
 
 @Module({
-  imports: [CorrelationModule.forRoot()],
+   imports: [CorrelationModule.forRoot()],
 })
 export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CorrelationIdMiddleware).forRoutes('*');
-  }
+   configure(consumer: MiddlewareConsumer) {
+     consumer.apply(CorrelationIdMiddleware).forRoutes('*');
+   }
 }
 ```
 
-You can pass the correlation through several layers of your application since http requests, kafka publisher events, queues, jobs and many others, all you have to do is  inject the  `CorrelationService` into your `Class` and use the `correlationId` property.
+Você pode passar o `correlationId` por várias camadas da sua aplicação desde requisições http, kafka publisher events, queues, jobs e muitos outros, tudo que você tem que fazer é injetar o `CorrelationService` na sua classe `Class` e usar a propriedade `correlationId`.
 
 ```ts
 import { Injectable, Logger } from '@nestjs/common';
@@ -50,14 +50,11 @@ import { CorrelationService } from 'nestjs-correlation-id';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly correlationService: CorrelationService) {}
+   construtor(private readonly correlationService: CorrelationService) {}
 
-  public async execute() {
-    Logger.log(`I am using the correlationId: ${this.correlationService.correlationId}`);
-    return ...
-  }
+   public async execute() {
+     Logger.log(`Estou usando o correlationId: ${this.correlationService.correlationId}`);
+     return ...
+   }
 }
-
-export default UserService;
 ```
-
