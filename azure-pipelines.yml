@@ -1,0 +1,28 @@
+trigger:
+  - main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "16.x"
+    displayName: "Install Node.js"
+
+  - task: npmAuthenticate@0
+    inputs:
+      workingFile: .npmrc
+    displayName: "npm authenticate"
+
+  - script: |
+      yarn
+      yarn build
+    displayName: "yarn install and build"
+
+  - task: Npm@1
+    inputs:
+      command: "publish"
+      publishRegistry: "useFeed"
+      publishFeed: "/Acesso/_packaging/Acesso/npm/registry/@bankly/correlation-id-nestjs"
+    displayName: "NPM publish"
