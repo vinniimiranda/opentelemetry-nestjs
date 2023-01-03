@@ -2,7 +2,7 @@
   "name": "nestjs-correlation-id",
   "version": "0.0.4",
   "description": "",
-  "author": "",
+  "author": "Miranda",
   "private": false,
   "license": "UNLICENSED",
   "main": "dist/index.js",
