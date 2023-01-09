@@ -1,6 +1,6 @@
 {
-  "name": "@bankly/correlation-id-nestjs",
-  "version": "0.0.4",
+  "name": "@bankly/otel-nestjs-sdk",
+  "version": "0.0.1",
   "description": "",
   "author": "Miranda",
   "private": false,
@@ -24,13 +24,7 @@
     "release": "release-it"
   },
   "keywords": [
-    "nestjs",
-    "nestjs-middleware",
-    "middleware",
-    "correlation",
-    "correlation-id",
-    "request",
-    "request-id"
+    "nestjs"
   ],
   "dependencies": {
     "@opentelemetry/api": "^1.2.0",
