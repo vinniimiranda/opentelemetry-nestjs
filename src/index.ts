@@ -1,3 +1,3 @@
-export * from './correlation-service';
-export * from './correlation.middleware';
-export * from './correlation.module';
+export { Span } from 'nestjs-otel';
+export * from './metric.service';
+export * from './otel.module';

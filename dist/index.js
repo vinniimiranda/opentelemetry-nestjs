@@ -14,6 +14,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("./correlation-service"), exports);
-__exportStar(require("./correlation.middleware"), exports);
-__exportStar(require("./correlation.module"), exports);
+exports.Span = void 0;
+var nestjs_otel_1 = require("nestjs-otel");
+Object.defineProperty(exports, "Span", { enumerable: true, get: function () { return nestjs_otel_1.Span; } });
+__exportStar(require("./metric.service"), exports);
+__exportStar(require("./otel.module"), exports);
