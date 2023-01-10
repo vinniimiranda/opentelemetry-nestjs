@@ -22,10 +22,9 @@ export class MetricService {
     this.meterProvider.addMetricReader(
       new PeriodicExportingMetricReader({
         exporter: this._exporter,
-        exportIntervalMillis: 1000,
+        exportIntervalMillis: 10000,
       }),
     );
-    // this.meterProvider.forceFlush();
   }
 
   public getMeter(name: string): metrics.Meter {

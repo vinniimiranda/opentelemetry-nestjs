@@ -16,6 +16,9 @@ import { TracingService } from './tracing.service';
 export interface OtelModuleOptions {
   url: string;
   serviceName: string;
+  useMetric: boolean;
+  useTracing: boolean;
+  useLog: boolean;
 }
 
 @Module({})
@@ -59,7 +62,7 @@ export class OtelModule {
       imports: [
         OpenTelemetryModule.forRoot({
           metrics: {
-            hostMetrics: false, // Includes Host Metrics
+            hostMetrics: true, // Includes Host Metrics
             apiMetrics: {
               enable: true, // Includes api metrics
               defaultAttributes: {
