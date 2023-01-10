@@ -8,6 +8,8 @@ import {
 import opentelemetry, { Attributes } from '@opentelemetry/api';
 import { Request, Response } from 'express';
 import { Observable } from 'rxjs';
+import { InjectOpenTelemetryModuleConfig } from '../decorators';
+import { OpenTelemetryModuleOptions } from '../interfaces';
 
 interface HttpTracigAttributes extends Attributes {
   http_method: string;
@@ -20,6 +22,10 @@ interface HttpTracigAttributes extends Attributes {
 
 @Injectable({ scope: Scope.REQUEST })
 export class TracingInterceptor implements NestInterceptor {
+  constructor(
+    @InjectOpenTelemetryModuleConfig()
+    private readonly config: OpenTelemetryModuleOptions,
+  ) {}
   public intercept(
     context: ExecutionContext,
     next: CallHandler,
@@ -47,7 +53,7 @@ export class TracingInterceptor implements NestInterceptor {
         http_status_code_family: String(data.statusCode)
           .slice(0, 1)
           .padEnd(3, '0'),
-        job: '<service_name>',
+        job: this.config.serviceName,
       };
       span.setAttributes(attributes);
       span.end();

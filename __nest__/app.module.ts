@@ -2,8 +2,7 @@ import { Controller, Get, Injectable, Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Span } from 'nestjs-otel';
 import { MetricInterceptor, TracingInterceptor } from '../src/interceptors/';
-import { OtelModule } from '../src/otel.module';
-
+import { OpenTelemetryModule } from '../src/open-telemetry.module';
 @Injectable()
 export class HealthService {
   @Span('service - validate status', {})
@@ -11,7 +10,7 @@ export class HealthService {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve(true);
-      }, 3000);
+      }, 200);
     });
   }
 }
@@ -27,21 +26,29 @@ class Default {
 
 @Module({
   imports: [
-    OtelModule.forRootAsync({
-      serviceName: 'template-otel',
-      url: 'http://otel-http.kube.acesso-sdb.aws',
-      useLog: true,
-      useMetric: true,
-      useTracing: true,
+    OpenTelemetryModule.forRootAsync({
+      useFactory: async () => {
+        return {
+          serviceName: 'x-teste--sdk',
+          url: 'http://otel-http.kube.acesso-sdb.aws',
+          useLog: true,
+          useMetric: true,
+          useTracing: true,
+        };
+      },
     }),
   ],
   controllers: [Default],
   providers: [
     HealthService,
-    TracingInterceptor,
+    MetricInterceptor,
     {
       provide: APP_INTERCEPTOR,
       useClass: MetricInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TracingInterceptor,
     },
   ],
 })

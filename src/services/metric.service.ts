@@ -5,15 +5,20 @@ import {
   MeterProvider,
   PeriodicExportingMetricReader,
 } from '@opentelemetry/sdk-metrics';
+import { InjectOpenTelemetryModuleConfig } from '../decorators';
+import { OpenTelemetryModuleOptions } from '../interfaces';
 
 @Injectable()
 export class MetricService {
   private readonly _exporter: OTLPMetricExporter;
   public meterProvider: MeterProvider;
 
-  constructor(url: string) {
+  constructor(
+    @InjectOpenTelemetryModuleConfig()
+    private readonly config: OpenTelemetryModuleOptions,
+  ) {
     this._exporter = new OTLPMetricExporter({
-      url: `${url}/v1/metrics`,
+      url: `${this.config.url}/v1/metrics`,
     });
     this.init();
   }

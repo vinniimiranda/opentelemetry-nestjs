@@ -1,4 +1,4 @@
 export { Span } from 'nestjs-otel';
 export * from './interceptors';
-export * from './metric.service';
-export * from './otel.module';
+export * from './open-telemetry.module';
+export * from './services/metric.service';

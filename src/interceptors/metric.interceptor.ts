@@ -3,12 +3,13 @@ import {
   ExecutionContext,
   Injectable,
   NestInterceptor,
-  Scope,
 } from '@nestjs/common';
 import { Attributes } from '@opentelemetry/api';
 import { Request, Response } from 'express';
 import { Observable } from 'rxjs';
-import { MetricService } from '../metric.service';
+import { InjectOpenTelemetryModuleConfig } from '../decorators';
+import { OpenTelemetryModuleOptions } from '../interfaces';
+import { MetricService } from '../services/metric.service';
 
 interface HttpMeterAttributes extends Attributes {
   http_method: string;
@@ -18,10 +19,13 @@ interface HttpMeterAttributes extends Attributes {
   'x-company-key': string;
   job: string;
 }
-
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class MetricInterceptor implements NestInterceptor {
-  constructor(private readonly metric: MetricService) {}
+  constructor(
+    @InjectOpenTelemetryModuleConfig()
+    private readonly config: OpenTelemetryModuleOptions,
+    private readonly metric: MetricService,
+  ) {}
   public intercept(
     context: ExecutionContext,
     next: CallHandler,
@@ -38,7 +42,6 @@ export class MetricInterceptor implements NestInterceptor {
     if (HEALTH_PATHS.includes(request.path)) {
       return next.handle();
     }
-
     response.on('finish', async () => {
       const data = context.switchToHttp().getResponse<Response>();
       const attributes: HttpMeterAttributes = {
@@ -49,7 +52,7 @@ export class MetricInterceptor implements NestInterceptor {
         http_status_code_family: String(data.statusCode)
           .slice(0, 1)
           .padEnd(3, '0'),
-        job: '<service_name>',
+        job: this.config.serviceName,
       };
       const end = new Date();
       const elapsedTime = end.getTime() - start.getTime();

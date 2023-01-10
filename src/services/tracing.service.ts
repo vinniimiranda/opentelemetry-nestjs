@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { InjectOpenTelemetryModuleConfig } from '../decorators';
+import { OpenTelemetryModuleOptions } from '../interfaces';
 
 @Injectable()
 export class TracingService {
   private readonly _exporter: OTLPTraceExporter;
 
-  constructor(url: string) {
+  constructor(
+    @InjectOpenTelemetryModuleConfig()
+    private readonly config: OpenTelemetryModuleOptions,
+  ) {
     this._exporter = new OTLPTraceExporter({
-      url: `${url}/v1/traces`,
+      url: `${this.config.url}/v1/traces`,
     });
   }
 
