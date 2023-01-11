@@ -44,6 +44,7 @@ export class MetricInterceptor implements NestInterceptor {
     }
     response.on('finish', async () => {
       const data = context.switchToHttp().getResponse<Response>();
+
       const attributes: HttpMeterAttributes = {
         'x-company-key': request.headers['x-company-key'] as string,
         http_method: request.method,

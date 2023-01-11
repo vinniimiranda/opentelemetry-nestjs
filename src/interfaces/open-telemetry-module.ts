@@ -5,7 +5,7 @@ export interface OpenTelemetryModuleOptions {
   serviceName: string;
   useMetric: boolean;
   useTracing: boolean;
-  useLog: boolean;
+  useLogging: boolean;
 }
 
 export interface OpenTelemetryModuleFactory {

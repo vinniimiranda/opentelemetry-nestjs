@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
 import { InjectOpenTelemetryModuleConfig } from '../decorators';
 import { OpenTelemetryModuleOptions } from '../interfaces';
 
-interface HttpTracigAttributes extends Attributes {
+interface HttpTracingAttributes extends Attributes {
   http_method: string;
   http_route: string;
   http_status_code?: number;
@@ -44,7 +44,7 @@ export class TracingInterceptor implements NestInterceptor {
 
     response.on('finish', async () => {
       const data = context.switchToHttp().getResponse<Response>();
-      const attributes: HttpTracigAttributes = {
+      const attributes: HttpTracingAttributes = {
         'x-company-key': request.headers['x-company-key'] as string,
         'x-correlation-id': request.headers['x-correlation-id'] as string,
         http_method: request.method,

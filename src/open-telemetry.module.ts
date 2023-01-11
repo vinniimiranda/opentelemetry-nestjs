@@ -12,7 +12,7 @@ import {
   W3CTraceContextPropagator,
 } from '@opentelemetry/core';
 import { Resource } from '@opentelemetry/resources';
-import { NodeSDK } from '@opentelemetry/sdk-node';
+import { NodeSDK, NodeSDKConfiguration } from '@opentelemetry/sdk-node';
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import { OpenTelemetryModule as OtelModule } from 'nestjs-otel';
@@ -31,30 +31,35 @@ import { MetricService, TracingService } from './services';
 
 @Injectable()
 class SDK implements OnModuleInit {
+  private sdk: NodeSDK;
+  private configuration: NodeSDKConfiguration = Object.assign({});
   constructor(
     @InjectOpenTelemetryModuleConfig()
     private readonly config: OpenTelemetryModuleOptions,
     private readonly tracingService: TracingService,
   ) {}
   async onModuleInit() {
-    const exporter = this.tracingService.getExporter();
-    const otelSDK = new NodeSDK({
-      traceExporter: exporter,
-      spanProcessor: new BatchSpanProcessor(exporter),
-      contextManager: new AsyncLocalStorageContextManager(),
-      resource: new Resource({
-        [SemanticResourceAttributes.SERVICE_NAME]: this.config.serviceName,
-      }),
-      textMapPropagator: new CompositePropagator({
-        propagators: [new W3CTraceContextPropagator()],
-      }),
-      instrumentations: [getNodeAutoInstrumentations()],
+    const { useTracing, serviceName, useLogging, useMetric } = this.config;
+    this.configuration.contextManager = new AsyncLocalStorageContextManager();
+    this.configuration.resource = new Resource({
+      [SemanticResourceAttributes.SERVICE_NAME]: serviceName,
     });
+    this.configuration.textMapPropagator = new CompositePropagator({
+      propagators: [new W3CTraceContextPropagator()],
+    });
+    this.configuration.instrumentations = [getNodeAutoInstrumentations()];
+
+    if (useTracing) {
+      const exporter = this.tracingService.getExporter();
+      this.configuration.traceExporter = exporter;
+      this.configuration.spanProcessor = new BatchSpanProcessor(exporter);
+    }
+
     try {
-      await otelSDK.start();
-      console.log('SDK Inicializado');
+      this.sdk = new NodeSDK(this.configuration);
+      await this.sdk.start();
     } catch (error) {
-      console.log(error);
+      throw new Error(`Unable to start open telemetry SDK`);
     }
   }
 }
@@ -86,7 +91,7 @@ export class OpenTelemetryModule {
         ...(options.imports || []),
         OtelModule.forRoot({
           metrics: {
-            hostMetrics: true, // Includes Host Metrics
+            hostMetrics: false, // Includes Host Metrics
             apiMetrics: {
               enable: true, // Includes api metrics
               defaultAttributes: {

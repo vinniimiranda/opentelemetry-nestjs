@@ -10,7 +10,7 @@ export class HealthService {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve(true);
-      }, 200);
+      }, 500);
     });
   }
 }
@@ -18,8 +18,10 @@ export class HealthService {
 @Controller('api/v1')
 class Default {
   constructor(private readonly callme: HealthService) {}
+  @Span('controller')
   @Get('/customer/:id')
   async handle() {
+    // throw new ConflictException('testes');
     return this.callme.callOnMe();
   }
 }
@@ -31,7 +33,7 @@ class Default {
         return {
           serviceName: 'x-teste--sdk',
           url: 'http://otel-http.kube.acesso-sdb.aws',
-          useLog: true,
+          useLogging: true,
           useMetric: true,
           useTracing: true,
         };
@@ -41,7 +43,6 @@ class Default {
   controllers: [Default],
   providers: [
     HealthService,
-    MetricInterceptor,
     {
       provide: APP_INTERCEPTOR,
       useClass: MetricInterceptor,

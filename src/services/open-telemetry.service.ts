@@ -7,13 +7,16 @@ export class OpenTelemetryService implements OpenTelemetryModuleOptions {
   serviceName: string;
   useMetric: boolean;
   useTracing: boolean;
-  useLog: boolean;
+  useLogging: boolean;
 
   constructor(
     @Inject(OPEN_TELEMETRY_MODULE_OPTIONS)
-    private readonly config?: OpenTelemetryModuleOptions,
+    config?: OpenTelemetryModuleOptions,
   ) {
     this.serviceName = config.serviceName;
     this.url = config.url;
+    this.useLogging = config.useLogging;
+    this.useTracing = config.useTracing;
+    this.useMetric = config.useMetric;
   }
 }
