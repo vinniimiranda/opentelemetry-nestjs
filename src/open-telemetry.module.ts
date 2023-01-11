@@ -81,6 +81,7 @@ export class OpenTelemetryModule {
 
     return {
       module: OpenTelemetryModule,
+      global: true,
       imports: [
         ...(options.imports || []),
         OtelModule.forRoot({
